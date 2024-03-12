@@ -35,19 +35,8 @@ if __name__ == "__main__":
     x.grad = A.backward(a.grad)
     print(x.grad)
 
-    assert c.creator == C
-    assert c.creator.input == b
-    assert c.creator.input.creator == B
-    assert c.creator.input.creator.input == a
-    assert c.creator.input.creator.input.creator == A
-    assert c.creator.input.creator.input.creator.input == x
-
     c.grad = np.array(1.0)
     c.backward()
-    print(x.grad)
-
-    c.grad = np.array(1.0)
-    c.backward_recursion()
     print(x.grad)
 
     x = Variable.Variable(np.array(0.5))
@@ -63,3 +52,44 @@ if __name__ == "__main__":
     y = square(exp(square(x)))
     y.backward()
     print(x.grad)
+
+    x = Variable.Variable(np.array(2.0))
+    y = Variable.Variable(np.array(3.0))
+
+    z = add(square(x), square(y))
+    z.backward()
+    print(x.grad, y.grad, z.data)
+
+    x = Variable.Variable(np.array(3.0))
+    y = add(x, x)
+    z = add(y, x)
+    z.backward()
+    print(x.grad, y.data, z.data)
+
+    x.cleargrad()
+    y.backward()
+    print(x.grad, y.data)
+
+    x = Variable.Variable(np.array(2.0))
+    a = square(x)
+    y = add(square(a), square(a))
+    y.backward()
+
+    print(x.grad, y.data)
+
+    for i in range(10):
+        x = Variable.Variable(np.random.randn(10000))
+        y = square(square(square(x)))
+        print(y.data)
+    
+    x = Variable.Variable(np.array([[1, 2, 3], [4, 5, 6]]))
+    print(x.shape, x.ndim, x.size, x.dtype, len(x))
+    print(x)
+
+    a = Variable.Variable(np.array(3.0))
+    b = Variable.Variable(np.array(2.0))
+    c = Variable.Variable(np.array(1.0))
+    y = a * b + c
+    y.backward()
+    print(y)
+    print(a.grad, b.grad, c.grad)

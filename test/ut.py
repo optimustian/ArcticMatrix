@@ -52,3 +52,20 @@ class MultiTest(unittest.TestCase):
         y.backward()
         num_grad = numerical_diff(square, x)
         self.assertTrue(np.allclose(x.grad, num_grad))
+
+class AddTest(unittest.TestCase):
+    def test_forward(self):
+        x = Variable.Variable(np.array(2.0))
+        y = Variable.Variable(np.array(3.0))
+        z = add(x, y)
+        expected = np.array(5.0)
+        self.assertEqual(z.data, expected)
+
+    def test_backward(self):
+        x = Variable.Variable(np.array(3.0))
+        y = Variable.Variable(np.array(2.0))
+        z = add(x, y)
+        z.backward()
+        expected = np.array(1.0)
+        self.assertEqual(x.grad, expected)
+        self.assertEqual(y.grad, expected)
